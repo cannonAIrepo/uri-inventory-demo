@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Inventory from './pages/Inventory'
 import ComingSoon from './pages/ComingSoon'
 import Footer from './components/Footer'
+import ChatWidget from './components/ChatWidget'
 
 export default function App() {
   const [branchId, setBranchId] = useState<BranchId>('001')
@@ -19,7 +20,7 @@ export default function App() {
   const activity = ACTIVITY_BY_BRANCH[branchId]
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 relative">
       <TopNav branchId={branchId} onBranchChange={setBranchId} />
       <div className="flex flex-1 min-h-0">
         <Sidebar active={page} onSelect={setPage} />
@@ -47,6 +48,7 @@ export default function App() {
           <Footer />
         </main>
       </div>
+      <ChatWidget branch={branch} items={items} />
     </div>
   )
 }
