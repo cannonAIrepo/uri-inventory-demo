@@ -25,6 +25,7 @@ export interface InventoryItem {
   leadTime: string
   lastReceived: string
   lastPo: string
+  oemPartNumbers?: string[]
 }
 
 export interface ActivityEntry {
@@ -70,6 +71,7 @@ const branch001: InventoryItem[] = [
     leadTime: '5 days',
     lastReceived: '2026-06-01',
     lastPo: 'PO-4802',
+    oemPartNumbers: ['ZR48K3-PFV-130', 'ZR48K3-PFV', 'ZR48K3'],
   },
   {
     partNumber: 'COM-TEC-AE4430',
@@ -81,6 +83,7 @@ const branch001: InventoryItem[] = [
     leadTime: '7 days',
     lastReceived: '2026-05-22',
     lastPo: 'PO-4778',
+    oemPartNumbers: ['AE4430Y-AA1A', 'AE4430Y'],
   },
   {
     partNumber: 'COM-BRI-H29',
@@ -92,6 +95,7 @@ const branch001: InventoryItem[] = [
     leadTime: '10 days',
     lastReceived: '2026-04-15',
     lastPo: 'PO-4701',
+    oemPartNumbers: ['H29A20QABCA', 'H29A20QABPA'],
   },
   {
     partNumber: 'REF-410A-25',
@@ -147,6 +151,7 @@ const branch001: InventoryItem[] = [
     leadTime: '6 days',
     lastReceived: '2026-05-30',
     lastPo: 'PO-4795',
+    oemPartNumbers: ['EX4-N2', 'EX4-R2', 'EX4N2'],
   },
   {
     partNumber: 'VAL-SOL-1/4',
@@ -158,6 +163,7 @@ const branch001: InventoryItem[] = [
     leadTime: '4 days',
     lastReceived: '2026-06-03',
     lastPo: 'PO-4808',
+    oemPartNumbers: ['EVR3', 'EVR 3', 'EVRH3'],
   },
   {
     partNumber: 'VAL-BV-3/8',
@@ -180,6 +186,7 @@ const branch001: InventoryItem[] = [
     leadTime: '3 days',
     lastReceived: '2026-05-10',
     lastPo: 'PO-4745',
+    oemPartNumbers: ['Z97F9844', '97F9844', 'P291-4554RS'],
   },
   {
     partNumber: 'ELC-CON-40A',
@@ -191,6 +198,7 @@ const branch001: InventoryItem[] = [
     leadTime: '4 days',
     lastReceived: '2026-06-01',
     lastPo: 'PO-4803',
+    oemPartNumbers: ['LC1D40F7', 'LC1D40', '42GF35AF'],
   },
   {
     partNumber: 'ELC-MOT-1/3HP',
@@ -202,6 +210,7 @@ const branch001: InventoryItem[] = [
     leadTime: '5 days',
     lastReceived: '2026-05-28',
     lastPo: 'PO-4789',
+    oemPartNumbers: ['F48C17A45', '5KCP39GGS465S', 'HC33GE230'],
   },
   {
     partNumber: 'FIT-COP-1/4',
@@ -224,6 +233,7 @@ const branch001: InventoryItem[] = [
     leadTime: '4 days',
     lastReceived: '2026-06-02',
     lastPo: 'PO-4805',
+    oemPartNumbers: ['C-417-S', 'EK164S', 'BD-053-S'],
   },
 ]
 
@@ -238,6 +248,7 @@ const branch007: InventoryItem[] = [
     leadTime: '5 days',
     lastReceived: '2026-05-20',
     lastPo: 'PO-4773',
+    oemPartNumbers: ['ZR48K3-PFV-130', 'ZR48K3-PFV', 'ZR48K3'],
   },
   {
     partNumber: 'COM-TEC-AE4430',
@@ -249,6 +260,7 @@ const branch007: InventoryItem[] = [
     leadTime: '7 days',
     lastReceived: '2026-06-05',
     lastPo: 'PO-4812',
+    oemPartNumbers: ['AE4430Y-AA1A', 'AE4430Y'],
   },
   {
     partNumber: 'REF-410A-25',

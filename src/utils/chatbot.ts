@@ -44,7 +44,7 @@ export function getChatResponse(query: string, branch: Branch, items: InventoryI
   }
 
   if (/help|what can you|what do you do/i.test(q)) {
-    return `I can help you with:\n• Stock alerts ("What's low?" / "Any critical items?")\n• Category lookups ("Show compressors")\n• Part lookups by number (e.g. COM-COP-ZR48)\n• Branch snapshot ("Give me a status summary")\n• Supplier info ("Who are our vendors?")`
+    return `I can help you with:\n• OEM cross-ref ("I need to replace a ZR48K3-PFV")\n• Stock alerts ("What's low?" / "Any critical items?")\n• Category lookups ("Show compressors")\n• Part lookups by URI or OEM number\n• Branch snapshot ("Give me a status summary")\n• Supplier info ("Who are our vendors?")`
   }
 
   const CATEGORY_KEYWORDS: Record<string, string> = {
@@ -76,15 +76,45 @@ export function getChatResponse(query: string, branch: Branch, items: InventoryI
     }
   }
 
-  const partMatch = query.match(/[A-Z]{2,}[-/][A-Z0-9-/]+/i)
+  function formatItem(item: InventoryItem, context: string): string {
+    const status = getStockStatus(item)
+    const statusLabel = status === 'in-stock' ? '✅ In Stock' : status === 'low' ? '⚠️ Low Stock' : '🔴 Critical — reorder now'
+    return `${context}\n• URI SKU: ${item.partNumber}\n• ${item.description}\n• Qty at ${branch.name}: ${item.qty} (reorder at ${item.reorderPt})\n• Supplier: ${item.supplier} · Lead time: ${item.leadTime}\n• Status: ${statusLabel}`
+  }
+
+  const isReplaceIntent = /replac|cross.?ref|equivalent|substitute|swap|what.*(uri|part).*(for|number)|i have a|i.ve got a|need.*instead/i.test(q)
+
+  const partMatch = query.match(/[A-Z0-9]{2,}[-/\s][A-Z0-9][-A-Z0-9-/\s]*/i)
   if (partMatch) {
-    const pn = partMatch[0].toUpperCase()
-    const item = items.find(i => i.partNumber.toUpperCase() === pn)
-    if (item) {
-      const status = getStockStatus(item)
-      return `${item.description}\n• Part #: ${item.partNumber}\n• Qty: ${item.qty} (reorder at ${item.reorderPt})\n• Supplier: ${item.supplier} · Lead time: ${item.leadTime}\n• Status: ${status === 'in-stock' ? '✅ In Stock' : status === 'low' ? '⚠️ Low Stock' : '🔴 Critical'}`
+    const pn = partMatch[0].trim().toUpperCase()
+
+    const uriItem = items.find(i => i.partNumber.toUpperCase() === pn)
+    if (uriItem) {
+      return formatItem(uriItem, `Found URI part ${pn}:`)
     }
-    return `Part ${pn} not found at ${branch.name}. Check the Inventory tab to browse by category.`
+
+    const pnCompact = pn.replace(/\s+/g, '')
+    const oemItem = items.find(i =>
+      i.oemPartNumbers?.some(oem => oem.toUpperCase().replace(/\s+/g, '') === pnCompact)
+    )
+    if (oemItem) {
+      return formatItem(oemItem, `OEM ${pn} → URI cross-reference:`)
+    }
+
+    if (isReplaceIntent) {
+      const words = pn.split(/[-/\s]/)
+      const fuzzyOem = items.find(i =>
+        i.oemPartNumbers?.some(oem =>
+          words.some(w => w.length > 3 && oem.toUpperCase().includes(w))
+        )
+      )
+      if (fuzzyOem) {
+        return formatItem(fuzzyOem, `Closest OEM match for ${pn}:`)
+      }
+      return `No URI cross-reference found for ${pn}. Our catalog doesn't carry a direct equivalent — call the counter and we'll source it.`
+    }
+
+    return `Part ${pn} not found at ${branch.name}. Try an OEM number to cross-reference, or check the Inventory tab.`
   }
 
   const words = q.split(/\s+/).filter(w => w.length > 3)

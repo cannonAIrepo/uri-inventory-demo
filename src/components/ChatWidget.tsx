@@ -13,7 +13,7 @@ interface Props {
   items: InventoryItem[]
 }
 
-const SUGGESTIONS = ["What's low on stock?", 'Show compressors', 'Any critical items?', 'Give me a snapshot']
+const SUGGESTIONS = ["Replace a ZR48K3-PFV", "What's low on stock?", 'Any critical items?', 'Give me a snapshot']
 
 function greeting(branch: Branch) {
   return `Hi! I'm your URI inventory assistant for ${branch.name} · ${branch.city}. Ask me about stock levels, specific parts, or categories.`
