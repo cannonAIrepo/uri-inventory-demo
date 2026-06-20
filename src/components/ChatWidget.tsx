@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { type InventoryItem, type Branch } from '../data/inventory'
 import { getChatResponse } from '../utils/chatbot'
+import { useCatalog } from '../hooks/useCatalog'
 
 interface Message {
   id: number
@@ -13,16 +14,23 @@ interface Props {
   items: InventoryItem[]
 }
 
-const SUGGESTIONS = ["Replace a ZR48K3-PFV", "What's low on stock?", 'Any critical items?', 'Give me a snapshot']
+const SUGGESTIONS = [
+  'Replace a ZR48K3-PFV',
+  '2-ton R-410A scrolls under $300',
+  "What's low on stock?",
+  'Any critical items?',
+]
 
-function greeting(branch: Branch) {
-  return `Hi! I'm your URI inventory assistant for ${branch.name} · ${branch.city}. Ask me about stock levels, specific parts, or categories.`
+function greeting(branch: Branch, catalogCount: number) {
+  const cat = catalogCount ? ` Full URI catalog of ${catalogCount.toLocaleString()} SKUs loaded — ask about specs, OEM cross-refs, or filtered searches.` : ''
+  return `Hi! I'm your URI inventory assistant for ${branch.name} · ${branch.city}.${cat}`
 }
 
 export default function ChatWidget({ branch, items }: Props) {
+  const { catalog } = useCatalog()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
-    { id: 0, role: 'assistant', text: greeting(branch) },
+    { id: 0, role: 'assistant', text: greeting(branch, catalog.length) },
   ])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
@@ -30,8 +38,8 @@ export default function ChatWidget({ branch, items }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    setMessages([{ id: 0, role: 'assistant', text: greeting(branch) }])
-  }, [branch.id])
+    setMessages([{ id: 0, role: 'assistant', text: greeting(branch, catalog.length) }])
+  }, [branch.id, catalog.length])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -48,11 +56,11 @@ export default function ChatWidget({ branch, items }: Props) {
     setInput('')
     setTyping(true)
     setTimeout(() => {
-      const response = getChatResponse(trimmed, branch, items)
+      const response = getChatResponse(trimmed, branch, items, catalog)
       setTyping(false)
       setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', text: response }])
     }, 550)
-  }, [branch, items, typing])
+  }, [branch, items, catalog, typing])
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
